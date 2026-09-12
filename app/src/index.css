@@ -1,0 +1,1931 @@
+/* ==========================================================================
+   Tiger learns! — design system
+   Derived from the reference screens: light grey canvas, white pills,
+   orange accent, generous vertical rhythm, centred single column.
+   ========================================================================== */
+
+:root {
+  /* Surfaces */
+  --color-canvas: #f0f0f0;
+  --color-surface: #ffffff;
+  --color-surface-muted: #e6e6e6;
+
+  /* Text */
+  --color-text: #1c1c1c;
+  --color-text-muted: #b5b5b5;
+  --color-text-soft: #7a7a7a;
+
+  /* Accent */
+  --color-accent: #e8641c;
+  --color-accent-strong: #d4550f;
+  --color-accent-soft: #fdf0e8;
+  --color-correct: #3aa757;
+  --color-wrong: #d64545;
+
+  /* Shape */
+  --radius-pill: 999px;
+  --radius-card: 20px;
+  --shadow-pill: 0 1px 2px rgba(0, 0, 0, 0.04), 0 2px 10px rgba(0, 0, 0, 0.05);
+  --shadow-raised: 0 4px 18px rgba(0, 0, 0, 0.1);
+
+  /* Spacing scale */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+
+  /* Type */
+  --font-sans: "Segoe UI", Roboto, "Helvetica Neue", Arial, system-ui, sans-serif;
+  --text-sm: 0.875rem;
+  --text-base: 1.0625rem;
+  --text-lg: 1.25rem;
+  --text-xl: 1.5rem;
+  --text-2xl: 2rem;
+  --text-3xl: 2.5rem;
+
+  --content-width: 960px;
+
+  color-scheme: light;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  min-height: 100%;
+}
+
+body {
+  background: var(--color-canvas);
+  color: var(--color-text);
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  line-height: 1.45;
+  -webkit-font-smoothing: antialiased;
+  overscroll-behavior: none;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  border: none;
+  background: none;
+  cursor: pointer;
+}
+
+input {
+  font: inherit;
+  color: inherit;
+}
+
+/* --------------------------------------------------------------------------
+   Layout primitives
+   -------------------------------------------------------------------------- */
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* Sticks to the top so the section menu is reachable from anywhere, including
+   halfway down a long list of levels or in the middle of a session. */
+.app-header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-5);
+  width: 100%;
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: var(--space-4) var(--space-5) var(--space-2);
+  background: var(--color-canvas);
+}
+
+.app-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-size: var(--text-xl);
+  font-weight: 500;
+}
+
+.app-brand__mark {
+  font-size: 1.6rem;
+  line-height: 1;
+}
+
+.app-main {
+  flex: 1;
+  width: 100%;
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: 0 var(--space-5) var(--space-8);
+}
+
+.stack {
+  display: flex;
+  flex-direction: column;
+}
+
+/* --------------------------------------------------------------------------
+   Language switcher
+   -------------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------------
+   Settings menu — the hamburger after the stats
+   -------------------------------------------------------------------------- */
+
+/*
+ * Stats and the menu button share a row.
+ *
+ * The row takes all the width left over from the brand, and the stats inside
+ * it keep their own `margin-left: auto` — so the tiles end up right-aligned and
+ * the hamburger, coming after them, lands flush against the right edge.
+ */
+.header-row {
+  display: flex;
+  flex: 1;
+  min-width: 0;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.settings-menu {
+  position: relative;
+  flex: none;
+}
+
+.settings-menu__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: var(--radius-pill);
+  font-size: 1.25rem;
+  line-height: 1;
+  color: var(--color-text-muted);
+}
+
+.settings-menu__button:hover {
+  background: rgba(0, 0, 0, 0.04);
+  color: var(--color-text);
+}
+
+/* Sits under the panel and over everything else, so the click that closes the
+   menu cannot also hit whatever is behind it. */
+.settings-menu__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 19;
+}
+
+.settings-menu__panel {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  right: 0;
+  z-index: 20;
+  width: min(20rem, calc(100vw - 2 * var(--space-4)));
+  padding: var(--space-3);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+}
+
+.settings-menu__heading {
+  margin: 0 0 var(--space-2);
+  padding: 0 var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.settings-menu__toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: 14px;
+  font-size: var(--text-sm);
+  cursor: pointer;
+}
+
+.settings-menu__toggle:hover {
+  background: var(--color-canvas);
+}
+
+.settings-menu__toggle input {
+  flex: none;
+  width: 1.1rem;
+  height: 1.1rem;
+  margin: 0;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
+.settings-menu__note {
+  margin: 0;
+  padding: 0 var(--space-3) var(--space-2);
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+.settings-menu__rule {
+  margin: var(--space-2) var(--space-3);
+  border: none;
+  border-top: 1px solid var(--color-canvas);
+}
+
+.settings-menu__option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  width: 100%;
+  padding: var(--space-3);
+  border-radius: 14px;
+  text-align: left;
+  font-size: var(--text-sm);
+}
+
+.settings-menu__option:hover {
+  background: var(--color-canvas);
+}
+
+.settings-menu__option[aria-disabled="true"] {
+  color: var(--color-text-muted);
+  cursor: default;
+}
+
+.settings-menu__option[aria-disabled="true"]:hover {
+  background: none;
+}
+
+/* --------------------------------------------------------------------------
+   Back link — muted, centred above content, as on the reference screens
+   -------------------------------------------------------------------------- */
+
+.back-link {
+  display: block;
+  margin: var(--space-6) auto var(--space-7);
+  padding: var(--space-2) var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--text-lg);
+}
+
+.back-link:hover {
+  color: var(--color-text-soft);
+}
+
+/* --------------------------------------------------------------------------
+   Pill — the core surface of the whole UI
+   -------------------------------------------------------------------------- */
+
+.pill {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-pill);
+  font-size: var(--text-lg);
+  text-align: left;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+/* Hover must not apply to an already-answered option: its box-shadow would
+   override the result outline and the marking would vanish under the cursor. */
+.pill:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-raised);
+}
+
+.pill:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.pill:disabled {
+  cursor: default;
+}
+
+.pill--center {
+  justify-content: center;
+  text-align: center;
+}
+
+.pill--accent {
+  background: var(--color-accent);
+  color: #fff;
+  justify-content: center;
+  font-weight: 500;
+}
+
+.pill--accent:hover {
+  background: var(--color-accent-strong);
+}
+
+.pill--outline {
+  background: var(--color-surface);
+  border: 1px solid #e2e2e2;
+  box-shadow: none;
+  justify-content: center;
+}
+
+/* Result marking: a clear outline, no fill and no wording.
+   `outline` rather than `box-shadow`, so nothing else can override it, and it
+   is drawn outside the pill without shifting the layout. */
+.pill--mark-correct,
+.pill--mark-wrong {
+  outline-width: 3px;
+  outline-style: solid;
+  outline-offset: -1px;
+}
+
+/* The right answer fills in solid, so it is spotted without reading the grid. */
+.pill--mark-correct {
+  outline-color: var(--color-correct);
+  border-color: var(--color-correct);
+  background: var(--color-correct);
+  color: #fff;
+}
+
+.pill--mark-correct .pill__number {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.pill--mark-wrong {
+  outline-color: var(--color-wrong);
+  border-color: var(--color-wrong);
+  background: var(--color-wrong);
+  color: #fff;
+}
+
+.pill--mark-wrong .pill__number {
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* Disabled options keep full contrast: this is the moment of learning. */
+.pill:disabled.pill--mark-correct,
+.pill:disabled.pill--mark-wrong {
+  opacity: 1;
+}
+
+.pill__meta {
+  margin-left: auto;
+  padding-left: var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  white-space: nowrap;
+}
+
+/* The ripe-today count, tinted so it reads as a prompt rather than a total. */
+.pill__due {
+  color: var(--color-accent);
+}
+
+/* --------------------------------------------------------------------------
+   Section browser: two rows of tabs above a full-width deck list
+   -------------------------------------------------------------------------- */
+
+.sections {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-6);
+  /* Full width of the header row, so it sits under the brand rather than
+     beside it however wide the window is. */
+  flex-basis: 100%;
+  padding-bottom: var(--space-2);
+}
+
+.sections__item {
+  padding: var(--space-1) 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-2xl);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.sections__item[aria-selected="true"] {
+  color: var(--color-text);
+}
+
+.sections__item:hover {
+  color: var(--color-text-soft);
+}
+
+.tracks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-5);
+  margin-bottom: var(--space-5);
+}
+
+.tracks__item {
+  padding: var(--space-1) 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-lg);
+}
+
+.tracks__item[aria-selected="true"] {
+  color: var(--color-text);
+}
+
+.decks {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+/* --------------------------------------------------------------------------
+   Level list
+   -------------------------------------------------------------------------- */
+
+.levels {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.levels__top {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.levels__back {
+  flex: none;
+  color: var(--color-text-muted);
+  font-size: var(--text-xl);
+  line-height: 1;
+}
+
+.levels__back:hover {
+  color: var(--color-text);
+}
+
+.levels__title {
+  /* Takes the slack so the action buttons sit at the far end of the row. */
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  font-size: var(--text-xl);
+  font-weight: 500;
+}
+
+.levels__action {
+  width: auto;
+  flex: none;
+  padding: var(--space-2) var(--space-5);
+  font-size: var(--text-sm);
+}
+
+
+
+.level {
+  padding: var(--space-5);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-pill);
+}
+
+.level__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+.level__title {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  margin: 0;
+  font-size: var(--text-lg);
+  font-weight: 500;
+}
+
+.level__count {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-weight: 400;
+}
+
+.level__actions {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.level__button {
+  width: auto;
+  padding: var(--space-2) var(--space-5);
+  font-size: var(--text-sm);
+}
+
+.level__words {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-3);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.level__word {
+  padding: var(--space-3);
+  border-radius: 14px;
+  background: var(--color-canvas);
+}
+
+.level__check {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  cursor: pointer;
+}
+
+.level__es {
+  font-weight: 500;
+}
+
+.level__ru {
+  color: var(--color-text-soft);
+  font-size: var(--text-sm);
+}
+
+.level__mnemonic {
+  margin: var(--space-2) 0 0;
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+  line-height: 1.35;
+}
+
+/* --------------------------------------------------------------------------
+   Word introduction cards
+   -------------------------------------------------------------------------- */
+
+.intro__counter {
+  margin: 0 0 var(--space-5);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.intro__card {
+  width: 100%;
+  max-width: 560px;
+  padding: var(--space-7) var(--space-6);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-pill);
+}
+
+.intro__es {
+  margin: 0;
+  font-size: var(--text-3xl);
+}
+
+.intro__ru {
+  margin: var(--space-3) 0 0;
+  color: var(--color-text-soft);
+  font-size: var(--text-xl);
+}
+
+.intro__mnemonic {
+  margin: var(--space-5) 0 0;
+  padding-top: var(--space-4);
+  border-top: 1px solid #eee;
+  color: var(--color-text-soft);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.intro__speak {
+  margin-top: var(--space-4);
+  color: var(--color-accent);
+  font-size: var(--text-sm);
+}
+
+.intro__next {
+  width: auto;
+  min-width: 220px;
+  margin-top: var(--space-6);
+  padding: var(--space-4) var(--space-6);
+}
+
+/* --------------------------------------------------------------------------
+   Practice screen
+   -------------------------------------------------------------------------- */
+
+.practice {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.practice__prompt {
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-xl);
+  font-weight: 500;
+}
+
+.practice__subject {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  min-height: 56px;
+  font-size: var(--text-xl);
+}
+
+.practice__token {
+  padding: var(--space-3) var(--space-6);
+  border-radius: var(--radius-pill);
+  background: var(--color-surface-muted);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.practice__ending {
+  color: var(--color-accent);
+}
+
+.practice__speak {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  color: var(--color-text-soft);
+  font-size: 1.1rem;
+}
+
+.practice__speak:hover {
+  background: rgba(0, 0, 0, 0.05);
+  color: var(--color-text);
+}
+
+.practice__options {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 700px;
+  margin-top: var(--space-8);
+}
+
+.practice__input-row {
+  display: flex;
+  gap: var(--space-4);
+  width: 100%;
+  max-width: 700px;
+  margin-top: var(--space-8);
+}
+
+.practice__input {
+  flex: 1;
+  padding: var(--space-4) var(--space-5);
+  border: none;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-pill);
+  outline: none;
+}
+
+.practice__input:focus {
+  box-shadow: var(--shadow-pill), 0 0 0 2px var(--color-accent-soft);
+}
+
+.practice__check {
+  min-width: 180px;
+  padding: var(--space-4) var(--space-6);
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: #fff;
+  font-size: var(--text-lg);
+}
+
+.practice__check:hover {
+  background: var(--color-accent-strong);
+}
+
+.practice__hint {
+  align-self: flex-start;
+  max-width: 700px;
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+/* Filled, not outlined — the same signal the choice grid uses. One meaning
+   should have one appearance. */
+.practice__input--correct,
+.practice__input--wrong {
+  color: #fff;
+  /* Disabled inputs grey their text out on WebKit unless this is set. */
+  -webkit-text-fill-color: #fff;
+  opacity: 1;
+}
+
+.practice__input--correct {
+  background: var(--color-correct);
+}
+
+.practice__input--wrong {
+  background: var(--color-wrong);
+}
+
+/* Listening question: the speaker button is the prompt. */
+.practice__audio {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-4);
+}
+
+/* Same vocabulary as the rest of the app: white surface, soft shadow, orange
+   accent. The triangle is nudged right because a play glyph reads as centred
+   only when its optical centre, not its bounding box, sits in the middle. */
+.practice__audio-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 76px;
+  height: 76px;
+  padding-left: 3px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-pill);
+  color: var(--color-accent);
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.practice__audio-button:hover {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-raised);
+}
+
+.practice__audio-button:active {
+  transform: scale(0.96);
+}
+
+/* Holds either the skip link or the answer; fixed height keeps the page still. */
+.practice__audio-slot {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 34px;
+}
+
+.practice__heard {
+  margin: 0;
+  font-size: var(--text-xl);
+}
+
+.practice__audio-skip {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.practice__audio-skip:hover {
+  color: var(--color-text-soft);
+}
+
+.practice__note--center {
+  text-align: center;
+}
+
+/* The answer appended to the question after a dash. */
+.practice__dash {
+  color: var(--color-text-muted);
+}
+
+.practice__answer {
+  color: var(--color-correct);
+}
+
+/* Space reserved for the post-answer explanations, so the footer never jumps
+   the moment a result appears. */
+.practice__after {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-height: 64px;
+  margin-top: var(--space-5);
+}
+
+/* Sits under the sentence and holds its own height while empty, so revealing
+   the translation never pushes the answer options down. */
+/* Same size as the Spanish sentence above it — the two are a pair, and colour
+   alone is enough to say which is the answer. */
+.practice__translation {
+  min-height: 1.9em;
+  max-width: 700px;
+  margin: var(--space-3) 0 0;
+  color: var(--color-correct);
+  font-size: var(--text-xl);
+}
+
+/* The word's other meanings, listed once the answer is in. */
+.practice__meanings {
+  max-width: 700px;
+  margin: 0;
+  color: var(--color-text-soft);
+  font-size: var(--text-sm);
+}
+
+.practice__actions {
+  display: flex;
+  margin-left: auto;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+/* Small round "set this one aside" control, deliberately quiet. */
+.practice__snooze {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  border: 1px solid #e2e2e2;
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: 0.95rem;
+  line-height: 1;
+}
+
+.practice__snooze:hover:not(:disabled) {
+  color: var(--color-text);
+  border-color: var(--color-text-muted);
+}
+
+.practice__snooze:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.voice-warning {
+  max-width: 720px;
+  margin: 0 0 var(--space-5);
+  padding: var(--space-3) var(--space-4);
+  border-radius: 14px;
+  background: var(--color-accent-soft);
+  color: var(--color-text-soft);
+  font-size: var(--text-sm);
+}
+
+.voice-warning__summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.voice-warning__summary::marker,
+.voice-warning__summary::-webkit-details-marker {
+  display: none;
+}
+
+/* A caret that flips when the warning is opened. */
+.voice-warning__summary::before {
+  content: "▸ ";
+  color: var(--color-text-muted);
+}
+
+.voice-warning[open] .voice-warning__summary::before {
+  content: "▾ ";
+}
+
+.voice-warning__body {
+  margin: var(--space-3) 0 0;
+}
+
+.voice-warning__recheck {
+  color: var(--color-accent);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.voice-warning__list {
+  margin: var(--space-2) 0 0;
+  padding-left: 1.1rem;
+}
+
+/* The "no" of a negative sentence, tinted so the shape of the sentence is
+   visible at a glance rather than read word by word. */
+.practice__negation {
+  color: var(--color-wrong);
+}
+
+/* Explanation shown when only the capitalisation was wrong. */
+.practice__note {
+  max-width: 700px;
+  margin: 0;
+  color: var(--color-text-soft);
+  font-size: var(--text-sm);
+  text-align: left;
+}
+
+/* Keyboard shortcut badge on a multiple-choice option. */
+.pill__number {
+  flex: none;
+  width: 22px;
+  margin-right: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  text-align: left;
+}
+
+.pill__label {
+  flex: 1;
+  text-align: center;
+  /* Balances the badge so the answer stays optically centred. */
+  margin-right: 22px;
+}
+
+.practice__feedback-rule {
+  margin-top: var(--space-2);
+  color: var(--color-text-soft);
+  font-size: var(--text-sm);
+}
+
+/*
+ * The links sit together on the left and the controls on the right.
+ * `space-between` used to do this on its own, but with three links it spread
+ * them across the whole width instead of keeping them as a group.
+ */
+.practice__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-3) var(--space-5);
+  width: 100%;
+  max-width: 860px;
+  margin-top: var(--space-8);
+  color: var(--color-text-muted);
+}
+
+.practice__footer button {
+  color: var(--color-text-muted);
+  font-size: var(--text-lg);
+}
+
+.practice__footer button:hover {
+  color: var(--color-text-soft);
+}
+
+/* --------------------------------------------------------------------------
+   Rule sheet
+   -------------------------------------------------------------------------- */
+
+.sheet-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-5);
+  background: rgba(0, 0, 0, 0.25);
+}
+
+.sheet {
+  width: 100%;
+  max-width: 620px;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding: var(--space-6);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-raised);
+  text-align: left;
+}
+
+.sheet h2 {
+  margin: 0 0 var(--space-4);
+  font-size: var(--text-xl);
+  font-weight: 500;
+}
+
+.sheet table {
+  width: 100%;
+  margin: var(--space-4) 0;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.sheet th,
+.sheet td {
+  padding: var(--space-2) var(--space-3);
+  border-bottom: 1px solid #eee;
+  text-align: left;
+}
+
+/* Merged cells only read as merged if the column edges are visible. */
+.sheet th + th,
+.sheet td + td {
+  border-left: 1px solid #eee;
+  text-align: center;
+}
+
+.sheet th {
+  color: var(--color-text-soft);
+  font-weight: 400;
+}
+
+/* A spanned cell covers several persons or several verb groups at once, so it
+   is the shared value that matters — centre it across what it covers. */
+.sheet td[colspan],
+.sheet th[colspan] {
+  text-align: center;
+}
+
+.sheet code {
+  color: var(--color-accent);
+}
+
+/* --------------------------------------------------------------------------
+   Stats
+   -------------------------------------------------------------------------- */
+
+/* Statistics sit directly on the canvas, with no surface of their own: white
+   pills are the app's vocabulary for "this is a button", and read-only numbers
+   must not look tappable. */
+.stats {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2) var(--space-4);
+  /* Pushed to the far end of the header row, away from the brand. */
+  margin-left: auto;
+}
+
+.stat-tile {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-1);
+}
+
+.stat-tile__value {
+  color: var(--color-text-soft);
+  font-size: var(--text-base);
+  line-height: 1.2;
+}
+
+.stat-tile__value--correct {
+  color: var(--color-correct);
+}
+
+.stat-tile__value--wrong {
+  color: var(--color-wrong);
+}
+
+.stat-tile__label {
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+}
+
+.stat-tile__slash {
+  color: var(--color-text-muted);
+}
+
+/* --------------------------------------------------------------------------
+   Session summary
+   -------------------------------------------------------------------------- */
+
+.summary {
+  max-width: 520px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.summary__title {
+  margin-bottom: var(--space-5);
+  font-size: var(--text-2xl);
+  font-weight: 400;
+}
+
+/* --------------------------------------------------------------------------
+   Small screens (phone)
+   -------------------------------------------------------------------------- */
+
+@media (max-width: 720px) {
+  .app-main {
+    padding: 0 var(--space-4) var(--space-7);
+  }
+
+  .sections {
+    gap: var(--space-4);
+  }
+
+  .sections__item {
+    font-size: var(--text-xl);
+  }
+
+  .stats {
+    /* Stays on the brand's line: it is four short numbers, and giving them a
+       row of their own pushed the section menu down a whole line. Only a very
+       narrow screen wraps them, via `flex-wrap` on the header. */
+    gap: var(--space-2) var(--space-3);
+  }
+
+  .stat-tile__label {
+    font-size: 0.75rem;
+  }
+
+  .practice__options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: var(--space-6);
+  }
+
+  .practice__input-row {
+    flex-direction: column;
+    margin-top: var(--space-6);
+  }
+
+  .practice__check {
+    width: 100%;
+  }
+
+  .pill {
+    padding: var(--space-4);
+    font-size: var(--text-base);
+  }
+
+  .back-link {
+    margin: var(--space-4) auto var(--space-5);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Verb browser and verb cards
+   -------------------------------------------------------------------------- */
+
+.verb-browser__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-3);
+}
+
+.verb-browser__actions .pill {
+  width: auto;
+  flex: 1 1 auto;
+  min-width: 8rem;
+}
+
+.verb-browser__hint {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: 1.5;
+}
+
+.verb-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.verb-card--standalone {
+  padding: var(--space-5);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-pill);
+}
+
+.verb-card__head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+.verb-card__es {
+  font-size: var(--text-lg);
+  font-weight: 600;
+}
+
+.verb-card__ru {
+  flex: 1;
+  min-width: 0;
+  color: var(--color-text-muted);
+}
+
+.verb-card__drill {
+  flex: none;
+  padding: var(--space-1) var(--space-3);
+  border-radius: var(--radius-pill);
+  background: var(--color-accent-soft, rgba(0, 0, 0, 0.04));
+  color: var(--color-accent);
+  font-size: var(--text-sm);
+}
+
+.verb-card__drill:hover {
+  text-decoration: underline;
+}
+
+.verb-card__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+
+.verb-card__table td {
+  padding: var(--space-1) 0;
+  vertical-align: baseline;
+}
+
+.verb-card__table td:first-child {
+  width: 45%;
+  color: var(--color-text-muted);
+}
+
+.verb-card__table code {
+  font-family: inherit;
+  font-weight: 600;
+}
+
+/* The same table inside an intro card, where the surface is already white. */
+.intro__table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: var(--space-3);
+  text-align: left;
+}
+
+.intro__table td {
+  padding: var(--space-1) 0;
+}
+
+.intro__table td:first-child {
+  width: 45%;
+  color: var(--color-text-muted);
+}
+
+.verb-card__tense {
+  flex: none;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.practice__remind,
+.practice__verb-list {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.practice__remind:hover,
+.practice__verb-list:hover {
+  color: var(--color-text);
+}
+
+.sheet__count {
+  margin: 0 0 var(--space-4);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+/* --------------------------------------------------------------------------
+   Progress screen
+   -------------------------------------------------------------------------- */
+
+.progress {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.progress__card {
+  padding: var(--space-5);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-pill);
+}
+
+.progress__title {
+  margin: 0 0 var(--space-3);
+  font-size: var(--text-lg);
+  font-weight: 500;
+}
+
+.progress__big {
+  margin: 0 0 var(--space-2);
+  font-size: 2.5rem;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.progress__big-unit {
+  font-size: var(--text-base, 1rem);
+  font-weight: 400;
+  color: var(--color-text-muted);
+}
+
+.progress__muted {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+}
+
+.progress__headline {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-lg);
+  font-weight: 500;
+}
+
+/* Today's ring, next to the words about today. */
+:root {
+  /* The unfilled part of any progress track: ring, bars. */
+  --color-track: #e2e2e2;
+}
+
+.progress__today {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-5);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-pill);
+}
+
+.progress__today-text {
+  flex: 1;
+  min-width: 12rem;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.goal-ring {
+  flex: none;
+  width: 6.5rem;
+  height: 6.5rem;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  /*
+   * A grey track with a green arc sweeping over it. Green rather than the
+   * accent orange because this one means "done", the same as a right answer
+   * everywhere else in the app — the ring should read at a glance without
+   * being interpreted.
+   */
+  background: conic-gradient(
+    var(--color-correct) var(--fill, 0deg),
+    var(--color-track) var(--fill, 0deg)
+  );
+}
+
+.goal-ring__inner {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  background: var(--color-surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.1;
+}
+
+.goal-ring__value {
+  font-size: var(--text-xl);
+  font-weight: 600;
+}
+
+.goal-ring__goal {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+/* One row per pool: label, bar, count. */
+.progress__rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin: var(--space-4) 0;
+}
+
+.progress__row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.progress__row-label {
+  flex: none;
+  width: 7.5rem;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.progress__row-value {
+  flex: none;
+  min-width: 4.5rem;
+  text-align: right;
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.progress__row-value--wide {
+  flex: 1;
+  text-align: left;
+}
+
+.bucket-bar {
+  flex: 1;
+  display: flex;
+  height: 0.6rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-track);
+  overflow: hidden;
+}
+
+.bucket-bar span {
+  display: block;
+  height: 100%;
+}
+
+.bucket-bar__mature {
+  background: var(--color-correct);
+}
+
+.bucket-bar__young {
+  background: var(--color-correct);
+  opacity: 0.6;
+}
+
+.bucket-bar__learning {
+  background: var(--color-correct);
+  opacity: 0.28;
+}
+
+.progress__legend {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-2);
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+}
+
+.legend-dot {
+  width: 0.55rem;
+  height: 0.55rem;
+  margin-left: var(--space-3);
+  border-radius: 50%;
+  background: var(--color-correct);
+}
+
+.legend-dot:first-child {
+  margin-left: 0;
+}
+
+.legend-dot--young {
+  opacity: 0.6;
+}
+
+.legend-dot--learning {
+  opacity: 0.28;
+}
+
+/* Thirty days of work, one column each. */
+.day-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 2px;
+  height: 5rem;
+  margin-bottom: var(--space-3);
+}
+
+.day-chart__col {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  align-items: flex-end;
+}
+
+.day-chart__bar {
+  width: 100%;
+  min-height: 2px;
+  border-radius: 2px;
+  background: var(--color-accent);
+  opacity: 0.35;
+}
+
+.day-chart__bar--goal {
+  opacity: 1;
+}
+
+/* The coming week. */
+.forecast {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-2);
+  height: 7rem;
+}
+
+.forecast__col {
+  flex: 1;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-1);
+}
+
+.forecast__count {
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.forecast__bar {
+  width: 100%;
+  min-height: 3px;
+  border-radius: 4px 4px 0 0;
+  background: var(--color-accent);
+  opacity: 0.5;
+}
+
+.forecast__day {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}
+
+/* Cards that keep slipping. */
+.hard-list {
+  list-style: none;
+  margin: 0 0 var(--space-3);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.hard-list__item {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-3);
+  font-size: var(--text-sm);
+}
+
+.hard-list__text {
+  flex: 1;
+  min-width: 0;
+}
+
+.hard-list__count {
+  flex: none;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+}
+
+/* The goal field in the settings menu. */
+.settings-menu__goal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: 14px;
+  font-size: var(--text-sm);
+}
+
+.settings-menu__goal input {
+  width: 4.5rem;
+  padding: var(--space-1) var(--space-2);
+  border: 1px solid var(--color-canvas);
+  border-radius: 10px;
+  background: var(--color-canvas);
+  font: inherit;
+  text-align: right;
+}
+
+/* --------------------------------------------------------------------------
+   Listening mode
+   -------------------------------------------------------------------------- */
+
+/* A deck and its headphone button share a row. */
+.deck-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.deck-row .pill {
+  flex: 1;
+  min-width: 0;
+}
+
+.deck-row__listen {
+  flex: none;
+  width: 3rem;
+  height: 3rem;
+  border-radius: 50%;
+  background: var(--color-surface);
+  box-shadow: var(--shadow-pill);
+  font-size: 1.15rem;
+  line-height: 1;
+}
+
+.deck-row__listen:hover {
+  background: var(--color-canvas);
+}
+
+.listen {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+/* Big, plain, and readable from across a kitchen. */
+.listen__card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  min-height: 9rem;
+  padding: var(--space-6) var(--space-5);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  box-shadow: var(--shadow-pill);
+  text-align: center;
+}
+
+.listen__es {
+  margin: 0;
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.listen__ru {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-lg);
+  /* Reserved rather than removed: revealing the translation must not make the
+     card jump under the eye. */
+  transition: opacity 0.15s;
+}
+
+.listen__ru--hidden {
+  opacity: 0;
+}
+
+.listen__controls {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-5);
+}
+
+.listen__play {
+  width: 5rem;
+  height: 5rem;
+  border-radius: 50%;
+  background: var(--color-accent);
+  color: #fff;
+  font-size: 1.5rem;
+  line-height: 1;
+  box-shadow: var(--shadow-pill);
+}
+
+.listen__step {
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: 1.1rem;
+  line-height: 1;
+  box-shadow: var(--shadow-pill);
+}
+
+.listen__step:hover {
+  color: var(--color-text);
+}
+
+.listen__position {
+  margin: 0;
+  text-align: center;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.listen__slider {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.listen__slider input {
+  width: 100%;
+  accent-color: var(--color-accent);
+}
+
+.listen__warning {
+  margin: 0;
+  padding: var(--space-4);
+  border-radius: var(--radius-card);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: 1.55;
+}
+
+.listen__note {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: 0.78rem;
+  line-height: 1.5;
+}
+
+/* --------------------------------------------------------------------------
+   Switched-off words
+   -------------------------------------------------------------------------- */
+
+/* The word takes the slack, the switch sits at the end, the mnemonic wraps
+   onto its own line below both. */
+.level__word {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-2);
+}
+
+.level__word .level__check {
+  flex: 1;
+  min-width: 0;
+}
+
+.level__word .level__mnemonic {
+  flex-basis: 100%;
+}
+
+/* Kept in place rather than hidden: the row is where it gets switched back on,
+   and removing it would renumber the levels below. */
+.level__word--retired .level__es,
+.level__word--retired .level__ru {
+  color: var(--color-text-muted);
+  text-decoration: line-through;
+}
+
+.level__word--retired .level__mnemonic {
+  display: none;
+}
+
+.level__retire {
+  flex: none;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--color-canvas);
+  color: var(--color-text-soft, #b4b4b4);
+  font-size: 0.85rem;
+  line-height: 1;
+}
+
+.level__retire:hover {
+  color: var(--color-text);
+}
+
+/*
+ * Grey, not green.
+ *
+ * Green is the colour of learned everywhere else in the app, and a green tick
+ * here read as "this one is done" — which quietly counted switched-off words
+ * as progress. They are the opposite: words taken out of the measurement
+ * entirely. Grey says removed, and leaves green to mean earned.
+ */
+.level__retire[aria-pressed="true"] {
+  background: var(--color-text-muted);
+  color: #fff;
+}
+
+.level__retire[aria-pressed="true"]:hover {
+  color: #fff;
+  opacity: 0.85;
+}
+
+/* --------------------------------------------------------------------------
+   Progress inside the word lists
+   -------------------------------------------------------------------------- */
+
+.level__bar {
+  margin: 0 0 var(--space-3);
+}
+
+/*
+ * One dot per word: the state of that card at a glance.
+ *
+ * Same three shades of green as everywhere else, so the dot and the bar above
+ * it are read as one scale rather than two systems. Untouched words get a
+ * hollow ring — absence, not a fourth colour.
+ */
+.level__state {
+  flex: none;
+  width: 0.6rem;
+  height: 0.6rem;
+  border-radius: 50%;
+  background: var(--color-correct);
+}
+
+.level__state--new {
+  background: none;
+  box-shadow: inset 0 0 0 1.5px var(--color-track);
+}
+
+.level__state--learning {
+  opacity: 0.28;
+}
+
+.level__state--young {
+  opacity: 0.6;
+}
+
+.level__state--retired {
+  background: none;
+  box-shadow: inset 0 0 0 1.5px var(--color-text-muted);
+}
+
+/* The switched-off share of a bar: grey, so green keeps meaning "earned". */
+.bucket-bar__retired {
+  background: var(--color-text-muted);
+  opacity: 0.45;
+}
+
+.legend-dot--retired {
+  background: var(--color-text-muted);
+  opacity: 0.45;
+}
+
+/* The level estimate: a headline, but a quiet one — it is an approximation. */
+.progress__level {
+  margin: 0 0 var(--space-2);
+  font-size: var(--text-lg);
+}
+
+.progress__level strong {
+  color: var(--color-accent);
+  font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   Deck standing, on the button itself
+   -------------------------------------------------------------------------- */
+
+/* The name takes the slack; the bar sits at the end of the same line. */
+.deck-row__open {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  text-align: left;
+}
+
+.deck-row__open > span:first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.deck-row__bar {
+  flex: none;
+  width: 40%;
+  max-width: 16rem;
+  height: 0.45rem;
+}
+
+@media (max-width: 520px) {
+  /* On a narrow screen the name needs the room more than the bar does. */
+  .deck-row__bar {
+    width: 30%;
+  }
+}

@@ -1,0 +1,12 @@
+# Dependencies and build output live under app/ and are recreated by npm.
+app/node_modules/
+app/dist/
+app/dist-ssr/
+*.log
+*.local
+
+# Editor files.
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
