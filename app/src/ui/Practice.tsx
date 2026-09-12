@@ -505,6 +505,7 @@ export function Practice({
         )
       )}
 
+      {(exercise.subject || exercise.complement || exercise.shown) && (
       <div className="practice__subject">
         {exercise.subject && (
           <>
@@ -541,6 +542,7 @@ export function Practice({
           </span>
         )}
       </div>
+      )}
 
       {/* The side the learner worked out for herself, revealed directly under
           the sentence it belongs to. The line is always present, empty until
@@ -588,19 +590,16 @@ export function Practice({
               autoCapitalize="off"
               spellCheck={false}
               onChange={(event) => setInput(event.target.value)}
-              onFocus={(event) => {
+              onFocus={() => {
                 /*
                  * A phone keyboard takes the lower half of the screen and the
                  * browser scrolls just far enough to show the field — which
-                 * puts the question above the top edge. Scrolling the field to
-                 * the middle once the keyboard has settled keeps the question
-                 * above it in view. Harmless on a desktop, where nothing moves.
+                 * puts the question, and the play button on a listening card,
+                 * above the top edge. Once the keyboard has settled the page is
+                 * put back to the top, where the whole compact card fits above
+                 * it. Harmless on a desktop, where nothing moves.
                  */
-                const field = event.currentTarget;
-                window.setTimeout(
-                  () => field.scrollIntoView({ block: "center", behavior: "smooth" }),
-                  350,
-                );
+                window.setTimeout(() => window.scrollTo({ top: 0, behavior: "smooth" }), 350);
               }}
               onKeyDown={(event) => {
                 // In Enter mode the window listener above owns the key, so

@@ -2055,12 +2055,28 @@ input {
     margin-top: var(--space-3);
   }
 
+  /* The translation line takes no room until there is a translation. */
   .practice__translation {
     min-height: 0;
+    margin: 0;
+  }
+
+  .practice__translation:not(:empty) {
+    margin-top: var(--space-3);
   }
 
   .practice__prompt {
+    margin-bottom: var(--space-2);
     font-size: var(--text-lg);
+  }
+
+  .practice__subject {
+    min-height: 0;
+  }
+
+  /* The card starts at the top of the screen and stays there. */
+  .practice {
+    justify-content: flex-start;
   }
 
   /* Still a real button, as asked — only not a desktop-sized one. */
