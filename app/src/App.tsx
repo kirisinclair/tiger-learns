@@ -280,24 +280,18 @@ export default function App() {
         {/* Everything here is about today, and it stays visible during practice
             so the running score does not need repeating on the exercise screen. */}
         <div className="header-row">
+          {/* Two numbers, on purpose. A phone header has room for a glance,
+              not a table; the split into right and wrong lives on the progress
+              screen, where there is room to read it. */}
           <div className="stats">
-            <div className="stat-tile">
+            <div className="stat-tile" title="Повторов сегодня">
               <span className="stat-tile__value">{stats.reviewsToday}</span>
-              <span className="stat-tile__label">повторов сегодня</span>
-            </div>
-            {/* Colour alone carries the meaning: red is the mistakes, green the
-                hits. Shorter than any wording, and the tooltip spells it out. */}
-            <div className="stat-tile" title="Верных / неверных ответов сегодня">
-              <span className="stat-tile__value stat-tile__value--correct">
-                {stats.correctToday}
-              </span>
-              <span className="stat-tile__slash">/</span>
-              <span className="stat-tile__value stat-tile__value--wrong">
-                {stats.reviewsToday - stats.correctToday}
-              </span>
+              <span className="stat-tile__label">сегодня</span>
             </div>
             <div className="stat-tile" title="Доля верных ответов сегодня">
-              <span className="stat-tile__value">
+              {/* Green because it is the share of right answers — the same
+                  green a right answer gets, so the number explains itself. */}
+              <span className="stat-tile__value stat-tile__value--correct">
                 {stats.reviewsToday > 0
                   ? Math.round((stats.correctToday / stats.reviewsToday) * 100)
                   : 0}

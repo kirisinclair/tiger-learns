@@ -104,6 +104,11 @@ export function Progress({ cards, stats, history, settings }: Props) {
             занятий подряд: {stats.streak} · рекорд {stats.bestStreak}
           </p>
           <p className="progress__muted">
+            Сегодня верных{" "}
+            <span className="progress__correct">{stats.correctToday}</span>, неверных{" "}
+            <span className="progress__wrong">{stats.reviewsToday - stats.correctToday}</span>
+          </p>
+          <p className="progress__muted">
             Всего ответов: {stats.totalReviews} · верных {accuracy}%
           </p>
         </div>

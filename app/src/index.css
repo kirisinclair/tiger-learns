@@ -119,10 +119,12 @@ input {
 
 .app-brand {
   display: flex;
+  flex: none;
   align-items: center;
   gap: var(--space-3);
-  font-size: var(--text-xl);
+  font-size: clamp(1rem, 4.5vw, var(--text-xl));
   font-weight: 500;
+  white-space: nowrap;
 }
 
 .app-brand__mark {
@@ -403,23 +405,32 @@ input {
    Section browser: two rows of tabs above a full-width deck list
    -------------------------------------------------------------------------- */
 
+/*
+ * The five tabs stay on one line whatever the width.
+ *
+ * They used to wrap, and on a phone "Прогресс" dropped to a line of its own
+ * and read as a heading for the list below it. Instead the type and the gaps
+ * scale with the viewport: at 360px the row is about 1rem, on a desktop it is
+ * the full 1.5rem, and there is never a second line.
+ */
 .sections {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: baseline;
-  gap: var(--space-6);
-  /* Full width of the header row, so it sits under the brand rather than
-     beside it however wide the window is. */
+  gap: clamp(0.75rem, 3.5vw, 1.5rem);
   flex-basis: 100%;
+  min-width: 0;
   padding-bottom: var(--space-2);
 }
 
 .sections__item {
+  flex: none;
   padding: var(--space-1) 0;
   color: var(--color-text-muted);
-  font-size: var(--text-2xl);
+  font-size: clamp(1rem, 4.6vw, var(--text-2xl));
   font-weight: 400;
   line-height: 1.2;
+  white-space: nowrap;
 }
 
 .sections__item[aria-selected="true"] {
@@ -430,17 +441,36 @@ input {
   color: var(--color-text-soft);
 }
 
+/*
+ * The second row of tabs: one line, scrolled sideways when it does not fit.
+ *
+ * Four labels are too long for a phone at any readable size, and wrapping put
+ * "По состоянию" on a line of its own with a hole above it. A row that scrolls
+ * is the usual answer on phones, and the type shrinks a little first so that
+ * scrolling is rarely needed.
+ */
 .tracks {
   display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-5);
+  flex-wrap: nowrap;
+  gap: clamp(0.85rem, 3.5vw, 1.25rem);
   margin-bottom: var(--space-5);
+  overflow-x: auto;
+  /* Room for the scrollbar without shifting the list below. */
+  padding-bottom: var(--space-1);
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tracks::-webkit-scrollbar {
+  display: none;
 }
 
 .tracks__item {
+  flex: none;
   padding: var(--space-1) 0;
   color: var(--color-text-muted);
-  font-size: var(--text-lg);
+  font-size: clamp(0.95rem, 3.9vw, var(--text-lg));
+  white-space: nowrap;
 }
 
 .tracks__item[aria-selected="true"] {
@@ -1075,11 +1105,23 @@ input {
    must not look tappable. */
 .stats {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   align-items: baseline;
-  gap: var(--space-2) var(--space-4);
+  gap: var(--space-4);
   /* Pushed to the far end of the header row, away from the brand. */
   margin-left: auto;
+  white-space: nowrap;
+}
+
+/* On a phone the word goes and the number stays: "209 · 89%" is enough. */
+@media (max-width: 480px) {
+  .stat-tile__label {
+    display: none;
+  }
+
+  .stats {
+    gap: var(--space-3);
+  }
 }
 
 .stat-tile {
@@ -1927,5 +1969,50 @@ input {
   /* On a narrow screen the name needs the room more than the bar does. */
   .deck-row__bar {
     width: 30%;
+  }
+}
+
+/* The split of today's answers, on the progress screen. */
+.progress__correct {
+  color: var(--color-correct);
+}
+
+.progress__wrong {
+  color: var(--color-wrong, #d9534f);
+}
+
+/*
+ * Narrow screens: the deck title gets its own line.
+ *
+ * With the arrow, the title and two buttons all fighting for one row, a
+ * three-word title was being folded into a three-line column between them.
+ * Below 600px the title takes the rest of the first line after the arrow and
+ * the buttons drop to a line of their own, sharing it equally.
+ */
+@media (max-width: 600px) {
+  .levels__title {
+    flex: 1 1 calc(100% - 2.75rem);
+    font-size: var(--text-lg);
+  }
+
+  .levels__action {
+    flex: 1 1 0;
+    min-width: 0;
+    padding-left: var(--space-3);
+    padding-right: var(--space-3);
+    text-align: center;
+  }
+
+  /* Same shape inside each level card. */
+  .level__header {
+    gap: var(--space-2);
+  }
+
+  .level__actions {
+    flex-basis: 100%;
+  }
+
+  .level__button {
+    flex: 1 1 0;
   }
 }
