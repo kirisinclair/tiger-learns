@@ -588,6 +588,20 @@ export function Practice({
               autoCapitalize="off"
               spellCheck={false}
               onChange={(event) => setInput(event.target.value)}
+              onFocus={(event) => {
+                /*
+                 * A phone keyboard takes the lower half of the screen and the
+                 * browser scrolls just far enough to show the field — which
+                 * puts the question above the top edge. Scrolling the field to
+                 * the middle once the keyboard has settled keeps the question
+                 * above it in view. Harmless on a desktop, where nothing moves.
+                 */
+                const field = event.currentTarget;
+                window.setTimeout(
+                  () => field.scrollIntoView({ block: "center", behavior: "smooth" }),
+                  350,
+                );
+              }}
               onKeyDown={(event) => {
                 // In Enter mode the window listener above owns the key, so
                 // that one press does one thing.

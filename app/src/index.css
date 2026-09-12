@@ -417,7 +417,7 @@ input {
   display: flex;
   flex-wrap: nowrap;
   align-items: baseline;
-  gap: clamp(0.75rem, 3.5vw, 1.5rem);
+  gap: clamp(0.6rem, 3.2vw, 1.5rem);
   flex-basis: 100%;
   min-width: 0;
   padding-bottom: var(--space-2);
@@ -427,7 +427,7 @@ input {
   flex: none;
   padding: var(--space-1) 0;
   color: var(--color-text-muted);
-  font-size: clamp(1rem, 4.6vw, var(--text-2xl));
+  font-size: clamp(0.9rem, 4.4vw, var(--text-2xl));
   font-weight: 400;
   line-height: 1.2;
   white-space: nowrap;
@@ -513,7 +513,7 @@ input {
 
 .levels__title {
   /* Takes the slack so the action buttons sit at the far end of the row. */
-  flex: 1;
+  flex: 1 1 8rem;
   min-width: 0;
   margin: 0;
   font-size: var(--text-xl);
@@ -1989,10 +1989,20 @@ input {
  * Below 600px the title takes the rest of the first line after the arrow and
  * the buttons drop to a line of their own, sharing it equally.
  */
+.levels__actions {
+  display: flex;
+  flex: none;
+  gap: var(--space-3);
+}
+
 @media (max-width: 600px) {
   .levels__title {
-    flex: 1 1 calc(100% - 2.75rem);
     font-size: var(--text-lg);
+  }
+
+  /* The group drops under the title and its buttons share the line. */
+  .levels__actions {
+    flex-basis: 100%;
   }
 
   .levels__action {
@@ -2014,5 +2024,64 @@ input {
 
   .level__button {
     flex: 1 1 0;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Practice on a phone
+   -------------------------------------------------------------------------- */
+
+/*
+ * The desktop layout keeps room under the question for the translation, the
+ * note shown after answering and a three-by-two grid of options — whether the
+ * card in front of you has any of them. On a phone that reserve is half the
+ * screen of nothing, and once the keyboard takes the other half the question
+ * is gone. So on narrow screens the reserves go and the gaps halve: the field
+ * sits right under the question and both stay on screen with the keyboard up.
+ */
+@media (max-width: 600px) {
+  .practice__options,
+  .practice__input-row {
+    margin-top: var(--space-4);
+  }
+
+  .practice__options {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-3);
+  }
+
+  .practice__after {
+    min-height: 0;
+    margin-top: var(--space-3);
+  }
+
+  .practice__translation {
+    min-height: 0;
+  }
+
+  .practice__prompt {
+    font-size: var(--text-lg);
+  }
+
+  /* Still a real button, as asked — only not a desktop-sized one. */
+  .practice__check {
+    min-width: 0;
+    padding: var(--space-3) var(--space-5);
+    font-size: var(--text-base);
+  }
+
+  .practice__footer {
+    margin-top: var(--space-5);
+  }
+}
+
+/*
+ * A short viewport — a phone with the keyboard up, or a landscape phone — is
+ * no place for a pinned header: the tabs would take a third of what is left.
+ * They scroll away with the page instead and come back with one flick.
+ */
+@media (max-height: 560px) {
+  .app-header {
+    position: static;
   }
 }

@@ -140,6 +140,9 @@ export function LevelPicker({ deck, cards, onStart, onRetire, onExit }: Props) {
           ←
         </button>
         <h1 className="levels__title">{deck.title}</h1>
+        {/* Grouped so that on a narrow screen the buttons move to a line of
+            their own together, rather than each finding its own place. */}
+        <div className="levels__actions">
         <button
           className="pill pill--accent levels__action"
           onClick={() => onStart(live(items), "intro")}
@@ -166,6 +169,7 @@ export function LevelPicker({ deck, cards, onStart, onRetire, onExit }: Props) {
             Учить отмеченные ({selected.size})
           </button>
         )}
+        </div>
       </div>
 
       {levels.map((level, index) => {
