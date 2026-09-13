@@ -269,8 +269,24 @@ export default function App() {
     };
   }, [activeDeck, session]);
 
+  /*
+   * Whether the practice screen itself is showing — as opposed to a deck list,
+   * a level list, the player or the progress tab.
+   *
+   * On a phone that flips the whole frame into session mode: the header with
+   * its tabs and numbers goes away and a thin bar with a close button takes
+   * its place, so the card can sit at the very top and stay there when the
+   * keyboard comes up. Mirrors the branch order in the JSX below exactly.
+   */
+  const practicing =
+    Boolean(activeDeck) &&
+    !listenDeck &&
+    section !== "progress" &&
+    !(activeDeck && isConjugationDeck(activeDeck) && !session) &&
+    !(activeDeck && activeDeck.levelSize && !session);
+
   return (
-    <div className="app">
+    <div className={`app${practicing ? " app--session" : ""}`}>
       <header className="app-header">
         <div className="app-brand">
           <span className="app-brand__mark">🐅</span>
@@ -355,6 +371,23 @@ export default function App() {
           />
         ) : activeDeck ? (
           <>
+            {/* The session bar: shown on phones in place of the header. The
+                cross ends the session and brings the header back — the same
+                exit the back link offers on a desktop. */}
+            <div className="session-bar">
+              <button
+                className="session-bar__close"
+                onClick={() => (session ? setSession(null) : setActiveDeck(null))}
+                aria-label="Закончить сессию"
+                title="Закончить сессию"
+              >
+                ✕
+              </button>
+              <span className="session-bar__title">{activeDeck.title}</span>
+              <span className="session-bar__count" title="Повторов сегодня">
+                {stats.reviewsToday}
+              </span>
+            </div>
             <button
               className="back-link"
               onClick={() => (session ? setSession(null) : setActiveDeck(null))}

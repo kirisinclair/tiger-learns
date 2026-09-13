@@ -2028,21 +2028,112 @@ input {
 }
 
 /* --------------------------------------------------------------------------
-   Practice on a phone
+   Session mode on a phone
    -------------------------------------------------------------------------- */
 
 /*
- * The desktop layout keeps room under the question for the translation, the
- * note shown after answering and a three-by-two grid of options — whether the
- * card in front of you has any of them. On a phone that reserve is half the
- * screen of nothing, and once the keyboard takes the other half the question
- * is gone. So on narrow screens the reserves go and the gaps halve: the field
- * sits right under the question and both stay on screen with the keyboard up.
+ * On a phone a session is the whole screen, the way a flashcard app does it.
+ *
+ * The header with its tabs goes away and a thin bar with a cross replaces it;
+ * the cross ends the session and brings everything back. Then the card is laid
+ * out in zones of fixed height — question, sentence, translation, answer —
+ * sized for a phone rather than collapsed. Fixed is the point: a question that
+ * is one line and the next that is two must not move the input field, and
+ * revealing the translation must not push the keyboard's neighbour down. With
+ * the zones fixed, everything above the keyboard stays where the thumb left
+ * it from one card to the next.
  */
+.session-bar {
+  display: none;
+}
+
 @media (max-width: 600px) {
+  .app--session .app-header,
+  .app--session .back-link {
+    display: none;
+  }
+
+  .app--session .session-bar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    height: 3rem;
+    margin: 0 calc(-1 * var(--space-5)) var(--space-3);
+    padding: 0 var(--space-5);
+    background: var(--color-canvas);
+  }
+
+  .session-bar__close {
+    flex: none;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 50%;
+    color: var(--color-text);
+    font-size: 1.25rem;
+    line-height: 1;
+  }
+
+  .session-bar__close:hover {
+    background: rgba(0, 0, 0, 0.05);
+  }
+
+  .session-bar__title {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    color: var(--color-text-muted);
+    font-size: var(--text-sm);
+  }
+
+  .session-bar__count {
+    flex: none;
+    color: var(--color-text-soft);
+    font-size: var(--text-sm);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* --- The zones ------------------------------------------------------ */
+
+  .practice {
+    justify-content: flex-start;
+  }
+
+  /* Zone 1: the question — or, on a listening card, the play button. Both
+     get the same height so the answer field never moves between them. */
+  .practice__prompt,
+  .practice__audio {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 5.5rem;
+    margin: 0;
+    font-size: var(--text-lg);
+  }
+
+  /* Zone 2: the Spanish sentence, on cards that have one. Always the same
+     height within a conjugation session, and absent in a word session. */
+  .practice__subject {
+    min-height: 2.75rem;
+    font-size: var(--text-lg);
+  }
+
+  /* Zone 3: the translation, held open whether or not it is filled. */
+  .practice__translation {
+    min-height: 2.5rem;
+    margin: 0;
+    font-size: var(--text-base);
+  }
+
+  /* Zone 4: the answer — a field or a grid, at one fixed offset. */
   .practice__options,
   .practice__input-row {
-    margin-top: var(--space-4);
+    margin-top: var(--space-3);
   }
 
   .practice__options {
@@ -2050,44 +2141,19 @@ input {
     gap: var(--space-3);
   }
 
-  .practice__after {
-    min-height: 0;
-    margin-top: var(--space-3);
-  }
-
-  /* The translation line takes no room until there is a translation. */
-  .practice__translation {
-    min-height: 0;
-    margin: 0;
-  }
-
-  .practice__translation:not(:empty) {
-    margin-top: var(--space-3);
-  }
-
-  .practice__prompt {
-    margin-bottom: var(--space-2);
-    font-size: var(--text-lg);
-  }
-
-  .practice__subject {
-    min-height: 0;
-  }
-
-  /* The card starts at the top of the screen and stays there. */
-  .practice {
-    justify-content: flex-start;
-  }
-
-  /* Still a real button, as asked — only not a desktop-sized one. */
   .practice__check {
     min-width: 0;
     padding: var(--space-3) var(--space-5);
     font-size: var(--text-base);
   }
 
+  .practice__after {
+    min-height: 2.5rem;
+    margin-top: var(--space-3);
+  }
+
   .practice__footer {
-    margin-top: var(--space-5);
+    margin-top: var(--space-4);
   }
 }
 
