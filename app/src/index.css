@@ -2167,3 +2167,33 @@ input {
     position: static;
   }
 }
+
+/* The last seven days as numbers under the chart. */
+.week-strip {
+  display: flex;
+  gap: var(--space-2);
+  margin: var(--space-3) 0;
+}
+
+.week-strip__day {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.week-strip__count {
+  font-size: var(--text-lg);
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+.week-strip__count--goal {
+  color: var(--color-correct);
+}
+
+.week-strip__label {
+  color: var(--color-text-muted);
+  font-size: 0.75rem;
+}

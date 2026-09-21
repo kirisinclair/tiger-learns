@@ -245,8 +245,25 @@ export function saveStats(stats: Stats): void {
 
 /** Oldest day first, so a chart can read it straight through. */
 export function loadHistory(): DayRecord[] {
-  const rows = read<DayRecord[]>(KEY_HISTORY, []);
-  return Array.isArray(rows) ? rows : [];
+  /*
+   * Parsed directly, not through `read`.
+   *
+   * `read` spreads what it parses over a fallback object, which is right for
+   * settings and stats and wrong for a list: an array spread into an object
+   * becomes {0: …, 1: …}, the "is this an array" check below said no, and
+   * the history came back empty on every launch. The first answer of the day
+   * then wrote a one-row history over the file — so for three weeks the
+   * record held only ever the current day, and the chart never had anything
+   * to draw. This is the fix; the lost days are not recoverable.
+   */
+  try {
+    const raw = localStorage.getItem(KEY_HISTORY);
+    if (!raw) return [];
+    const rows = JSON.parse(raw) as unknown;
+    return Array.isArray(rows) ? (rows as DayRecord[]) : [];
+  } catch {
+    return [];
+  }
 }
 
 export function saveHistory(history: DayRecord[]): void {

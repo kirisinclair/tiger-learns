@@ -1,10 +1,8 @@
 import { useMemo } from "react";
 import { CONTENT } from "../content";
 import {
-  dueForecast,
   goalStreak,
   grammarProgress,
-  hardCards,
   knownCount,
   levelEstimate,
   recentDays,
@@ -21,7 +19,13 @@ interface Props {
   settings: Settings;
 }
 
-const WEEKDAYS = ["пн", "вт", "ср", "чт", "пт", "сб", "вс"];
+const WEEKDAYS = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
+
+/** "пн", "вт" … for a YYYY-MM-DD key, in local time. */
+function weekdayLabel(day: string): string {
+  const [y, m, d] = day.split("-").map(Number);
+  return WEEKDAYS[new Date(y, m - 1, d).getDay()];
+}
 
 function plural(n: number, one: string, few: string, many: string): string {
   const mod10 = n % 10;
@@ -59,8 +63,6 @@ export function Progress({ cards, stats, history, settings }: Props) {
 
   const vocab = useMemo(() => vocabularyProgress(CONTENT, cards), [cards]);
   const grammar = useMemo(() => grammarProgress(cards), [cards]);
-  const hard = useMemo(() => hardCards(CONTENT, cards, 8), [cards]);
-  const forecast = useMemo(() => dueForecast(cards, now, 7), [cards, now]);
   const days = useMemo(() => recentDays(history, now, 30), [history, now]);
 
   const goal = settings.dailyGoal;
@@ -73,7 +75,6 @@ export function Progress({ cards, stats, history, settings }: Props) {
   // half of the count that compares to anything outside this app.
   const level = levelEstimate(knownCount(vocab.words));
   const busiest = Math.max(1, ...days.map((d) => d.reviews));
-  const maxDue = Math.max(1, ...forecast);
   const accuracy =
     stats.totalReviews > 0 ? Math.round((stats.totalCorrect / stats.totalReviews) * 100) : 0;
 
@@ -197,8 +198,7 @@ export function Progress({ cards, stats, history, settings }: Props) {
         <h2 className="progress__title">Последние 30 дней</h2>
         {history.length === 0 ? (
           <p className="progress__muted">
-            История ведётся с сегодняшнего дня — за прошлое взять неоткуда. Через неделю здесь
-            будет виден график.
+            Пока ни одного дня с ответами. С первого ответа здесь появятся повторы по дням.
           </p>
         ) : (
           <>
@@ -216,80 +216,26 @@ export function Progress({ cards, stats, history, settings }: Props) {
                 </div>
               ))}
             </div>
+            {/* The last week spelled out: the number for each day is the
+                thing being asked for, and a bar alone makes the reader guess. */}
+            <div className="week-strip">
+              {days.slice(-7).map((day) => (
+                <div className="week-strip__day" key={day.day}>
+                  <span className={`week-strip__count${day.reviews >= goal ? " week-strip__count--goal" : ""}`}>
+                    {day.reviews}
+                  </span>
+                  <span className="week-strip__label">{weekdayLabel(day.day)}</span>
+                </div>
+              ))}
+            </div>
             <p className="progress__muted">
-              Столбик закрашен полностью, когда норма за тот день сделана. Наведи курсор, чтобы
-              увидеть числа.
+              Зелёным — дни, когда норма сделана. Столбики — последние 30 дней, числа — последняя
+              неделя.
             </p>
           </>
         )}
       </section>
 
-      {/* What the next week will ask for. */}
-      <section className="progress__card">
-        <h2 className="progress__title">Что созреет</h2>
-        <div className="forecast">
-          {forecast.map((count, offset) => {
-            const date = new Date(now + offset * 24 * 60 * 60 * 1000);
-            return (
-              <div className="forecast__col" key={offset}>
-                <span className="forecast__count">{count}</span>
-                <span
-                  className="forecast__bar"
-                  style={{ height: `${(count / maxDue) * 100}%` }}
-                />
-                <span className="forecast__day">
-                  {offset === 0 ? "сегодня" : WEEKDAYS[(date.getDay() + 6) % 7]}
-                </span>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      {/* Trouble spots, if any have earned the name. */}
-      {hard.length > 0 && (
-        <section className="progress__card">
-          <h2 className="progress__title">Не даётся</h2>
-          <ul className="hard-list">
-            {hard.map((row) => (
-              <li className="hard-list__item" key={row.id}>
-                <span className="hard-list__text">{describe(row.ref)}</span>
-                <span className="hard-list__count">
-                  забыто {row.lapses} {plural(row.lapses, "раз", "раза", "раз")}
-                </span>
-              </li>
-            ))}
-          </ul>
-          <p className="progress__muted">
-            Это не приговор карточке: пара забываний — норма для нового слова. В списке те,
-            которые возвращаются чаще прочих.
-          </p>
-        </section>
-      )}
     </div>
   );
-}
-
-/** A card named the way the learner met it, not by its internal id. */
-function describe(ref: { kind: string } & Record<string, unknown>): string {
-  switch (ref.kind) {
-    case "lexeme": {
-      const lex = CONTENT.lexemes.get(ref.lexemeId as string);
-      return lex ? `${lex.es} — ${lex.ru[0]}` : String(ref.lexemeId);
-    }
-    case "phrase": {
-      const phrase = CONTENT.phrases.get(ref.phraseId as string);
-      return phrase ? phrase.es : String(ref.phraseId);
-    }
-    case "verbMeaning": {
-      const verb = CONTENT.verbs.get(ref.verbId as string);
-      return verb ? `${verb.infinitive} — ${verb.ru[0]}` : String(ref.verbId);
-    }
-    case "conjugation": {
-      const verb = CONTENT.verbs.get(ref.verbId as string);
-      return verb ? `${verb.infinitive}, ${ref.person}` : String(ref.verbId);
-    }
-    default:
-      return "";
-  }
 }
