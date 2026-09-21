@@ -387,6 +387,15 @@ export default function App() {
               <span className="session-bar__count" title="Повторов сегодня">
                 {stats.reviewsToday}
               </span>
+              {/* The same menu as in the header, which is hidden while a session
+                  runs on a phone: switching to "advance on Enter" mid-session
+                  must not require leaving the session to reach it. */}
+              <SettingsMenu
+                settings={settings}
+                onChange={updateSettings}
+                onExport={downloadProgress}
+                onImport={uploadProgress}
+              />
             </div>
             <button
               className="back-link"
