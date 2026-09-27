@@ -19,12 +19,10 @@ interface Props {
   settings: Settings;
 }
 
-const WEEKDAYS = ["вс", "пн", "вт", "ср", "чт", "пт", "сб"];
-
-/** "пн", "вт" … for a YYYY-MM-DD key, in local time. */
-function weekdayLabel(day: string): string {
-  const [y, m, d] = day.split("-").map(Number);
-  return WEEKDAYS[new Date(y, m - 1, d).getDay()];
+/** "27.09" for a YYYY-MM-DD key — short enough for thirty of them in a row. */
+function dayLabel(day: string): string {
+  const [, m, d] = day.split("-");
+  return `${d}.${m}`;
 }
 
 function plural(n: number, one: string, few: string, many: string): string {
@@ -202,35 +200,35 @@ export function Progress({ cards, stats, history, settings }: Props) {
           </p>
         ) : (
           <>
+            {/*
+              One chart, not two.
+              The bars and the numbers used to be separate rows — thirty bars
+              above, seven numbers below — so a number stood under no bar in
+              particular and the axis meant nothing. Now each column carries
+              its own count above it and its own date under it, and the two
+              cannot disagree.
+            */}
             <div className="day-chart">
               {days.map((day) => (
                 <div
-                  className="day-chart__col"
+                  className={`day-chart__col${day.reviews >= goal ? " day-chart__col--goal" : ""}`}
                   key={day.day}
-                  title={`${day.day}: ${day.reviews} повторов, верных ${day.correct}`}
+                  title={`${dayLabel(day.day)}: ${day.reviews} ${plural(day.reviews, "повтор", "повтора", "повторов")}, верных ${day.correct}`}
                 >
-                  <span
-                    className={`day-chart__bar${day.reviews >= goal ? " day-chart__bar--goal" : ""}`}
-                    style={{ height: `${(day.reviews / busiest) * 100}%` }}
-                  />
-                </div>
-              ))}
-            </div>
-            {/* The last week spelled out: the number for each day is the
-                thing being asked for, and a bar alone makes the reader guess. */}
-            <div className="week-strip">
-              {days.slice(-7).map((day) => (
-                <div className="week-strip__day" key={day.day}>
-                  <span className={`week-strip__count${day.reviews >= goal ? " week-strip__count--goal" : ""}`}>
-                    {day.reviews}
+                  <span className="day-chart__count">{day.reviews > 0 ? day.reviews : ""}</span>
+                  <span className="day-chart__track">
+                    <span
+                      className="day-chart__bar"
+                      style={{ height: `${(day.reviews / busiest) * 100}%` }}
+                    />
                   </span>
-                  <span className="week-strip__label">{weekdayLabel(day.day)}</span>
+                  <span className="day-chart__date">{dayLabel(day.day)}</span>
                 </div>
               ))}
             </div>
             <p className="progress__muted">
-              Зелёным — дни, когда норма сделана. Столбики — последние 30 дней, числа — последняя
-              неделя.
+              Зелёным — дни, когда норма сделана. Над столбиком — сколько повторов, под ним —
+              дата.
             </p>
           </>
         )}
