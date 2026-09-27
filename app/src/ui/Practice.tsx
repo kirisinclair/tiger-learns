@@ -552,7 +552,21 @@ export function Practice({
       )}
 
       {exercise.kind === "choice" && exercise.options ? (
-        <div className="practice__options">
+        /*
+         * Three columns suit single words and ruin whole phrases: "¿Qué ciudad
+         * deberíamos visitar?" was being folded into four lines inside a round
+         * pill, which is unreadable and uneven besides. So the shape follows
+         * the content — anything long enough to wrap gets a column of full
+         * rows, one option per line, which is also how the phrase will be read
+         * when it is met for real.
+         */
+        <div
+          className={`practice__options${
+            exercise.options.some((option) => option.length > 14)
+              ? " practice__options--long"
+              : ""
+          }`}
+        >
           {exercise.options.map((option, index) => {
             const isAnswer = option === exercise.answer;
             const isChosenWrong = feedback?.verdict === "wrong" && feedback.chosen === option;

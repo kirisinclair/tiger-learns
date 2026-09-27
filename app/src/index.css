@@ -724,6 +724,26 @@ input {
   margin-top: var(--space-8);
 }
 
+/* One option per row: each keeps its phrase on a single line. */
+.practice__options--long {
+  grid-template-columns: 1fr;
+  gap: var(--space-3);
+}
+
+.practice__options--long .pill {
+  justify-content: flex-start;
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--text-base);
+  text-align: left;
+}
+
+/* A phrase that still will not fit — a long one on a narrow phone — wraps
+   rather than overflowing, but it wraps in a wide row instead of a narrow
+   pill, so two lines is the worst case. */
+.practice__options--long .pill__label {
+  white-space: normal;
+}
+
 .practice__input-row {
   display: flex;
   gap: var(--space-4);
@@ -2181,6 +2201,10 @@ input {
   .practice__options {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     gap: var(--space-3);
+  }
+
+  .practice__options--long {
+    grid-template-columns: 1fr;
   }
 
   .practice__check {
