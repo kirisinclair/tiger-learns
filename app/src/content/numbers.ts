@@ -214,7 +214,7 @@ const ORDINALS: BigRow[] = [
   ["primero", "первый", "Перед существительным мужского рода теряет -o: el primer día, но el primero de mayo."],
   ["segundo", "второй"],
   ["tercero", "третий", "Тоже укорачивается: el tercer piso."],
-  ["cuarto", "комнатка"],
+  ["cuarto", "четвёртый"],
   ["quinto", "пятый"],
   ["sexto", "шестой"],
   ["séptimo", "седьмой"],
