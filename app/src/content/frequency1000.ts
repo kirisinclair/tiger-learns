@@ -456,7 +456,7 @@ const ROWS: Row[] = [
   ["absolutamente", "абсолютно", "adverb"],
   ["evitar", "избегать", "verb"],
   ["bala", "пуля", "noun", "f"],
-  ["vosotros", "вы (нескольким, на «ты»)", "pronoun"],
+  ["vosotros", "вы (многим на «ты», ES)", "pronoun"],
   ["confianza", "доверие", "noun", "f"],
   ["especialmente", "особенно", "adverb"],
   ["comenzar", "начинать", "verb"],
